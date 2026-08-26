@@ -1,0 +1,10 @@
+{
+  "name": "aruna-review-shopify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aruna Review Shopify app configuration and Theme App Extension",
+  "scripts": {
+    "deploy": "shopify app deploy --config production --allow-updates",
+    "dev": "shopify app dev --config production"
+  }
+}
