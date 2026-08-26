@@ -1,0 +1,93 @@
+<section
+  class="aruna-reviews aruna-reviews--{{ block.settings.visual_theme }}"
+  data-aruna-reviews
+  data-product-id="{{ product.id }}"
+  data-product-handle="{{ product.handle | escape }}"
+  data-product-title="{{ product.title | escape }}"
+  style="--aruna-accent: {{ block.settings.accent_color }}; --aruna-star: {{ block.settings.star_color }};"
+>
+  <header class="aruna-reviews__header">
+    <div>
+      <p class="aruna-reviews__eyebrow">ARUNA REVIEW</p>
+      <h2>{{ block.settings.heading | escape }}</h2>
+    </div>
+    <div class="aruna-reviews__summary" data-summary aria-live="polite">
+      <strong data-average>0,0</strong>
+      <span class="aruna-stars" data-summary-stars aria-label="0 de 5 estrelas">☆☆☆☆☆</span>
+      <small><span data-total>0</span> avaliações</small>
+    </div>
+  </header>
+
+  <div class="aruna-reviews__toolbar">
+    <label>
+      Ordenar
+      <select data-sort>
+        <option value="recent">Mais recentes</option>
+        <option value="rating">Maior nota</option>
+        <option value="helpful">Mais úteis</option>
+      </select>
+    </label>
+    <button type="button" class="aruna-button aruna-button--secondary" data-toggle-form>Escrever avaliação</button>
+  </div>
+
+  <div class="aruna-reviews__form-wrap" data-form-wrap hidden>
+    <form class="aruna-review-form" data-review-form>
+      <div class="aruna-review-form__grid">
+        <label>Nome<input required maxlength="120" name="customer_name" autocomplete="name"></label>
+        <label>E-mail<input required maxlength="254" type="email" name="customer_email" autocomplete="email"></label>
+      </div>
+      <label>Nota
+        <select required name="rating">
+          <option value="5">★★★★★ — 5</option>
+          <option value="4">★★★★☆ — 4</option>
+          <option value="3">★★★☆☆ — 3</option>
+          <option value="2">★★☆☆☆ — 2</option>
+          <option value="1">★☆☆☆☆ — 1</option>
+        </select>
+      </label>
+      <label>Título<input maxlength="180" name="title"></label>
+      <label>Sua avaliação<textarea required minlength="2" maxlength="5000" name="body" rows="5"></textarea></label>
+      <div class="aruna-review-form__actions">
+        <button class="aruna-button" type="submit">Enviar avaliação</button>
+        <span class="aruna-review-form__status" data-form-status aria-live="polite"></span>
+      </div>
+      <small>A avaliação passa por moderação antes de aparecer na loja.</small>
+    </form>
+  </div>
+
+  <div class="aruna-reviews__loading" data-loading>Carregando avaliações…</div>
+  <div class="aruna-reviews__list" data-list></div>
+  <div class="aruna-reviews__empty" data-empty hidden>Ainda não há avaliações aprovadas para este produto.</div>
+</section>
+
+{% schema %}
+{
+  "name": "Aruna Reviews",
+  "target": "section",
+  "enabled_on": { "templates": ["product"] },
+  "stylesheet": "aruna-reviews.css",
+  "javascript": "aruna-reviews.js",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Título", "default": "Avaliações de clientes" },
+    { "type": "color", "id": "accent_color", "label": "Cor principal", "default": "#0B4FA3" },
+    { "type": "color", "id": "star_color", "label": "Cor das estrelas", "default": "#F5B301" },
+    { "type": "select", "id": "visual_theme", "label": "Tema", "default": "aruna-premium", "options": [
+      {"value":"compat-01","label":"Compatibilidade 01 — Clássico"},
+      {"value":"compat-02","label":"Compatibilidade 02 — Moderno"},
+      {"value":"compat-03","label":"Compatibilidade 03 — Marketplace"},
+      {"value":"compat-04","label":"Compatibilidade 04 — Galeria"},
+      {"value":"compat-05","label":"Compatibilidade 05 — Cards"},
+      {"value":"compat-06","label":"Compatibilidade 06 — Minimal"},
+      {"value":"compat-07","label":"Compatibilidade 07 — Centralizado"},
+      {"value":"compat-08","label":"Compatibilidade 08 — Social"},
+      {"value":"compat-09","label":"Compatibilidade 09 — Lista"},
+      {"value":"compat-10","label":"Compatibilidade 10 — Amplo"},
+      {"value":"compat-11","label":"Compatibilidade 11 — Escuro"},
+      {"value":"aruna-premium","label":"ARUNA — Premium"},
+      {"value":"aruna-compact","label":"ARUNA — Compacto"},
+      {"value":"aruna-media","label":"ARUNA — Fotos & Vídeos"},
+      {"value":"aruna-lux","label":"ARUNA — Lux"}
+    ]}
+  ]
+}
+{% endschema %}
