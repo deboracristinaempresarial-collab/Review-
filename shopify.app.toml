@@ -1,0 +1,19 @@
+name = "Aruna Review"
+client_id = "662fb6d03dd458e822b4b9baed65f70c"
+application_url = "https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-reviews-shopify"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = false
+
+[access_scopes]
+scopes = "read_products"
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [
+  "https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-reviews-shopify"
+]
+
+[webhooks]
+api_version = "2026-07"
