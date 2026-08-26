@@ -1,0 +1,23 @@
+<div
+  class="aruna-rating-badge"
+  data-aruna-rating
+  data-product-id="{{ product.id }}"
+  style="--aruna-star: {{ block.settings.star_color }};"
+>
+  <span class="aruna-stars" data-rating-stars aria-label="0 de 5 estrelas">☆☆☆☆☆</span>
+  <strong data-rating-average>0,0</strong>
+  <span class="aruna-rating-badge__count">(<span data-rating-total>0</span>)</span>
+</div>
+
+{% schema %}
+{
+  "name": "Aruna Star Rating",
+  "target": "section",
+  "enabled_on": { "templates": ["product"] },
+  "stylesheet": "aruna-reviews.css",
+  "javascript": "aruna-reviews.js",
+  "settings": [
+    { "type": "color", "id": "star_color", "label": "Cor das estrelas", "default": "#F5B301" }
+  ]
+}
+{% endschema %}
