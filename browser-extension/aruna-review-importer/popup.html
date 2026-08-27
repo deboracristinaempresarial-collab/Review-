@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Aruna Review Importer</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <p class="eyebrow">ARUNA REVIEW</p>
+      <h1>Importer</h1>
+      <p class="sub">Leve avaliações públicas para o produto certo da sua Shopify.</p>
+    </header>
+
+    <section id="pairView" class="card" hidden>
+      <h2>Conectar à Shopify</h2>
+      <p>Abra Aruna Review na Shopify, toque em <strong>Gerar código de conexão</strong> e digite o código aqui.</p>
+      <label>Código de 8 caracteres
+        <input id="pairCode" maxlength="8" autocomplete="off" spellcheck="false" placeholder="ABCD2345">
+      </label>
+      <button id="pairButton" class="primary">Conectar</button>
+      <p id="pairStatus" class="status" role="status"></p>
+    </section>
+
+    <section id="mainView" hidden>
+      <div class="card connected">
+        <div>
+          <span class="dot"></span>
+          <strong>Conectado ao Aruna Review</strong>
+          <small id="shopDomain"></small>
+        </div>
+        <button id="disconnectButton" class="link">Desconectar</button>
+      </div>
+
+      <section class="card">
+        <label>Produto de destino
+          <select id="productSelect"></select>
+        </label>
+        <button id="refreshCatalogButton" class="secondary">Atualizar produtos</button>
+      </section>
+
+      <section class="card">
+        <div class="row between">
+          <div>
+            <h2>Avaliações da página</h2>
+            <small id="sourceLabel">Detectando origem…</small>
+          </div>
+          <span id="countBadge" class="badge">0</span>
+        </div>
+        <button id="scanButton" class="primary">Ler página aberta</button>
+        <div id="preview" class="preview"></div>
+      </section>
+
+      <section class="card">
+        <label class="check"><input id="importedOnly" type="checkbox" checked> Marcar como importadas e enviar somente registros válidos</label>
+        <button id="sendButton" class="primary" disabled>Enviar para Aruna Review</button>
+        <p id="status" class="status" role="status"></p>
+      </section>
+    </section>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
