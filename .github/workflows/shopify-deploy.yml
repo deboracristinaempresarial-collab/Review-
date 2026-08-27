@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - aruna-review-complete
   workflow_dispatch:
 
 permissions:
