@@ -31,4 +31,4 @@ jobs:
         env:
           SHOPIFY_APP_AUTOMATION_TOKEN: ${{ secrets.SHOPIFY_APP_AUTOMATION_TOKEN }}
           COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
-        run: shopify app deploy --config production --allow-updates --no-release --source-control-url "$COMMIT_URL"
+        run: shopify app deploy --config production --no-release --source-control-url "$COMMIT_URL"
