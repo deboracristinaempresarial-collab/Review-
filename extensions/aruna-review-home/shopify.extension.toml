@@ -1,0 +1,11 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "Aruna Review"
+handle = "aruna-review-home"
+uid = "5e29f8d2-5e29-4c52-9f4a-a5d70a32f801"
+type = "ui_extension"
+
+[[extensions.targeting]]
+target = "admin.app.home.render"
+module = "./src/AppHome.jsx"
