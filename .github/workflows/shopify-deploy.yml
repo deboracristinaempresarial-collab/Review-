@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - aruna-review-native-home
   workflow_dispatch:
 
 permissions:
