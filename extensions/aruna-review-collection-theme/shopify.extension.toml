@@ -1,0 +1,11 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "Aruna Review - Tema da coleção"
+handle = "aruna-review-collection-theme"
+uid = "79af9730-2dd2-4b70-bc10-ec0dde6f4c9a"
+type = "ui_extension"
+
+[[extensions.targeting]]
+target = "admin.collection-details.block.render"
+module = "./src/Placement.jsx"
