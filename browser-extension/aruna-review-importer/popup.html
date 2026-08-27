@@ -15,9 +15,9 @@
           <p class="eyebrow">ARUNA REVIEW</p>
           <h1>Importador</h1>
         </div>
-        <span class="version">v1.1</span>
+        <span class="version">v1.2</span>
       </div>
-      <p class="sub">Avaliações públicas da página aberta → produto certo da sua Shopify.</p>
+      <p class="sub">Detecta automaticamente o app de avaliações da página e envia para o produto certo da sua Shopify.</p>
     </header>
 
     <section id="pairView" class="panel pair" hidden>
@@ -58,12 +58,13 @@
           <div>
             <span class="mini-label">ORIGEM</span>
             <h2>Avaliações encontradas</h2>
-            <small id="sourceLabel">Abra uma página de produto.</small>
+            <small id="sourceLabel">Detectando automaticamente…</small>
+            <div class="detected-row"><span id="appBadge" class="app-badge" hidden></span><span id="autoHint" class="auto-hint">Detecção automática</span></div>
           </div>
           <span id="countBadge" class="count">0</span>
         </div>
 
-        <button id="scanButton" class="btn primary scan">Ler avaliações desta página</button>
+        <button id="scanButton" class="btn primary scan">Detectar e ler avaliações</button>
 
         <div id="filterBar" class="filter-bar" hidden>
           <select id="ratingFilter" class="mini-select" aria-label="Filtrar nota">
