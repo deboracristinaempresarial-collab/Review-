@@ -1,0 +1,1 @@
+Aruna Review Importer é um componente próprio do Aruna Review.

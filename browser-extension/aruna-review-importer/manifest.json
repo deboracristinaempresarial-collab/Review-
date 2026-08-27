@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Aruna Review Importer",
+  "version": "1.1.0",
+  "description": "Importe avaliações públicas para o Aruna Review conectado à sua Shopify.",
+  "permissions": ["storage", "activeTab", "tabs", "scripting"],
+  "host_permissions": [
+    "https://txqsqudkhyehxkwmmart.supabase.co/*",
+    "https://*.shopee.com.br/*",
+    "https://*.aliexpress.com/*",
+    "https://*.amazon.com.br/*",
+    "https://*.mercadolivre.com.br/*",
+    "https://*.shein.com/*",
+    "https://*.temu.com/*",
+    "https://*.ebay.com/*",
+    "https://*.alibaba.com/*"
+  ],
+  "action": {
+    "default_title": "Aruna Review Importer",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

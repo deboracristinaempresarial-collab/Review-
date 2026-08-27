@@ -8,7 +8,10 @@ type = "ui_extension"
 
 [[extensions.targeting]]
 target = "admin.app.home.render"
-module = "./src/AppHome.jsx"
+module = "./src/EntryV2.jsx"
+
+[extensions.capabilities]
+network_access = true
 
 [access_scopes]
 scopes = "read_products"
