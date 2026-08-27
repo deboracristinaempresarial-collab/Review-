@@ -1,0 +1,57 @@
+{% liquid
+  assign question_items = shop.metaobjects['$app:question'].values
+  assign settings_items = shop.metaobjects['$app:settings'].values
+  assign global_settings = settings_items.first
+  assign show_qa = true
+  if global_settings != blank
+    assign show_qa = global_settings.show_qa.value
+  endif
+%}
+
+{% if show_qa %}
+<section class="aruna-qa" aria-label="Perguntas e respostas">
+  <header class="aruna-qa__header">
+    <p class="aruna-reviews__eyebrow">ARUNA REVIEW</p>
+    <h2>{{ block.settings.heading | escape }}</h2>
+  </header>
+
+  {% assign qa_count = 0 %}
+  <div class="aruna-qa__list">
+    {% for item in question_items reversed %}
+      {% if item.product_handle.value == product.handle and item.status.value == 'approved' and item.merchant_answer.value != blank %}
+        {% assign qa_count = qa_count | plus: 1 %}
+        <article class="aruna-qa__item">
+          <div class="aruna-qa__question">
+            <strong>Pergunta</strong>
+            <p>{{ item.question.value | escape | newline_to_br }}</p>
+            <small>{{ item.customer_name.value | default: 'Cliente' | escape }}</small>
+          </div>
+          <div class="aruna-qa__answer">
+            <strong>Resposta da loja</strong>
+            <p>{{ item.merchant_answer.value | escape | newline_to_br }}</p>
+          </div>
+        </article>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if qa_count == 0 %}
+    <div class="aruna-reviews__empty">
+      <strong>Ainda não há perguntas respondidas.</strong>
+      <span>As respostas publicadas no Aruna Review aparecem aqui.</span>
+    </div>
+  {% endif %}
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Aruna Perguntas",
+  "target": "section",
+  "enabled_on": { "templates": ["product"] },
+  "stylesheet": "aruna-reviews.css",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Título", "default": "Perguntas e respostas" }
+  ]
+}
+{% endschema %}
