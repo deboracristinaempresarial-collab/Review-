@@ -33,9 +33,15 @@ async function getSyncKey() {
   return key;
 }
 
-async function getShopDomain() {
-  const result = await shopify.query(`query ArunaShopDomain { shop { myshopifyDomain } }`);
-  return result?.data?.shop?.myshopifyDomain || '';
+async function getShopContext() {
+  const result = await shopify.query(`query ArunaShopContext {
+    shop { myshopifyDomain }
+    products(first: 100, sortKey: UPDATED_AT, reverse: true) { nodes { id title handle } }
+  }`);
+  return {
+    shopDomain: result?.data?.shop?.myshopifyDomain || '',
+    products: result?.data?.products?.nodes || [],
+  };
 }
 
 async function adminCall(syncKey, body) {
@@ -105,12 +111,19 @@ async function syncInbox(syncKey) {
 
 async function setupNativeBridge() {
   const syncKey = await getSyncKey();
-  const shopDomain = await getShopDomain();
+  const {shopDomain, products} = await getShopContext();
   const boot = await adminCall(syncKey,{action:'bootstrap',shop_domain:shopDomain});
+  await adminCall(syncKey,{action:'catalog_update',products});
   await shopify.storage.set('arunaReviewSubmissionTokenV1', boot.submission_token || '');
   const api = {
     syncNow: () => syncInbox(syncKey),
+    refreshCatalog: async () => {
+      const context = await getShopContext();
+      await adminCall(syncKey,{action:'catalog_update',products:context.products});
+      return context.products;
+    },
     createPair: async () => {
+      await api.refreshCatalog();
       const pair = await adminCall(syncKey,{action:'create_pair'});
       await shopify.storage.set('arunaReviewPairCodeV1', pair);
       return pair;
@@ -140,17 +153,18 @@ function mountBridgeControls(api) {
   const stack = el('s-stack');
   stack.setAttribute('direction','block');
   stack.setAttribute('gap','small');
-  const intro = el('s-text','Conecte a extensão Aruna Review Importer sem usuário e senha. O código vale por 10 minutos.');
+  const intro = el('s-text','Conecte a extensão Aruna Review Importer sem usuário e senha. O código vale por 10 minutos e leva os produtos da Shopify para o seletor da extensão.');
   const actions = el('s-stack');
   actions.setAttribute('direction','inline');
   actions.setAttribute('gap','small');
   const pairButton = el('s-button','Gerar código de conexão');
   pairButton.setAttribute('variant','primary');
   const syncButton = el('s-button','Sincronizar caixa agora');
+  const catalogButton = el('s-button','Atualizar produtos');
   const status = el('s-text','');
   pairButton.addEventListener('click', async () => {
     pairButton.disabled = true;
-    status.textContent = 'Gerando código…';
+    status.textContent = 'Gerando código e atualizando produtos…';
     try {
       const pair = await api.createPair();
       const expiry = pair?.expires_at ? new Date(pair.expires_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
@@ -173,7 +187,19 @@ function mountBridgeControls(api) {
       syncButton.disabled = false;
     }
   });
-  actions.append(pairButton,syncButton);
+  catalogButton.addEventListener('click', async () => {
+    catalogButton.disabled = true;
+    status.textContent = 'Atualizando produtos…';
+    try {
+      const products = await api.refreshCatalog();
+      status.textContent = `${products.length} produto(s) enviados para o importador.`;
+    } catch {
+      status.textContent = 'Não foi possível atualizar os produtos agora.';
+    } finally {
+      catalogButton.disabled = false;
+    }
+  });
+  actions.append(pairButton,syncButton,catalogButton);
   stack.append(intro,actions,status);
   section.appendChild(stack);
   page.appendChild(section);
