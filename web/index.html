@@ -1,0 +1,13 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Aruna Review</title><style>html,body{margin:0;min-height:100%;background:#071322;font-family:system-ui,sans-serif}.loading{min-height:100vh;display:grid;place-items:center;color:white;font-weight:700}.error{max-width:520px;padding:24px;text-align:center;line-height:1.5}</style></head><body><div class="loading" id="boot">Carregando Aruna Review…</div><script>
+(async()=>{
+  const SOURCE='https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-reviews-panel-source';
+  const PROXY='https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-reviews-admin-proxy';
+  try{
+    const r=await fetch(SOURCE,{cache:'no-store'});
+    if(!r.ok)throw new Error('Painel indisponível');
+    let html=await r.text();
+    html=html.replaceAll('https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-reviews-admin',PROXY);
+    document.open();document.write(html);document.close();
+  }catch(e){document.getElementById('boot').innerHTML='<div class="error">Não foi possível carregar o Aruna Review.<br>Tente atualizar a página.</div>'}
+})();
+</script></body></html>
