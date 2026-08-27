@@ -97,7 +97,7 @@ type = "date_time"
 
 [metaobjects.app.review.fields.media_urls]
 name = "Fotos e vídeos"
-type = "json"
+type = "list.url"
 
 [metaobjects.app.review.fields.helpful_count]
 name = "Votos úteis"
