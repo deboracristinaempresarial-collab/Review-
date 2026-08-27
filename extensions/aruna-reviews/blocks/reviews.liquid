@@ -35,6 +35,13 @@
     assign show_helpful = global_settings.show_helpful.value
   endif
 
+  if collection != blank and collection.metafields.app.review_theme.value != blank
+    assign visual_theme = collection.metafields.app.review_theme.value
+  endif
+  if product.metafields.app.review_theme.value != blank
+    assign visual_theme = product.metafields.app.review_theme.value
+  endif
+
   for review in review_items
     if review.product_handle.value == product.handle and review.status.value == 'approved'
       assign review_count = review_count | plus: 1
