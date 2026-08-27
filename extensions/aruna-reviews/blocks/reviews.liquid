@@ -1,7 +1,39 @@
 {% liquid
   assign review_items = shop.metaobjects['$app:review'].values
+  assign settings_items = shop.metaobjects['$app:settings'].values
+  assign global_settings = settings_items.first
   assign review_count = 0
   assign rating_sum = 0
+
+  assign display_heading = block.settings.heading
+  assign accent_color = block.settings.accent_color
+  assign star_color = block.settings.star_color
+  assign visual_theme = block.settings.visual_theme
+  assign reviews_per_page = 20
+  assign show_verified = true
+  assign show_source = true
+  assign show_helpful = true
+
+  if global_settings != blank
+    if global_settings.heading.value != blank
+      assign display_heading = global_settings.heading.value
+    endif
+    if global_settings.accent_color.value != blank
+      assign accent_color = global_settings.accent_color.value
+    endif
+    if global_settings.star_color.value != blank
+      assign star_color = global_settings.star_color.value
+    endif
+    if global_settings.visual_theme.value != blank
+      assign visual_theme = global_settings.visual_theme.value
+    endif
+    if global_settings.reviews_per_page.value != blank
+      assign reviews_per_page = global_settings.reviews_per_page.value | plus: 0
+    endif
+    assign show_verified = global_settings.show_verified.value
+    assign show_source = global_settings.show_source.value
+    assign show_helpful = global_settings.show_helpful.value
+  endif
 
   for review in review_items
     if review.product_handle.value == product.handle and review.status.value == 'approved'
@@ -19,13 +51,14 @@
 %}
 
 <section
-  class="aruna-reviews aruna-reviews--{{ block.settings.visual_theme }}"
-  style="--aruna-accent: {{ block.settings.accent_color }}; --aruna-star: {{ block.settings.star_color }};"
+  id="aruna-reviews"
+  class="aruna-reviews aruna-reviews--{{ visual_theme }}"
+  style="--aruna-accent: {{ accent_color }}; --aruna-star: {{ star_color }};"
 >
   <header class="aruna-reviews__header">
     <div>
       <p class="aruna-reviews__eyebrow">ARUNA REVIEW</p>
-      <h2>{{ block.settings.heading | escape }}</h2>
+      <h2>{{ display_heading | escape }}</h2>
     </div>
 
     <div class="aruna-reviews__summary" aria-label="Resumo das avaliações">
@@ -45,14 +78,16 @@
     </div>
 
     <div class="aruna-reviews__list">
+      {% assign rendered_reviews = 0 %}
       {% for review in review_items reversed %}
-        {% if review.product_handle.value == product.handle and review.status.value == 'approved' %}
+        {% if review.product_handle.value == product.handle and review.status.value == 'approved' and rendered_reviews < reviews_per_page %}
+          {% assign rendered_reviews = rendered_reviews | plus: 1 %}
           {% assign rating = review.rating.value | default: 0 | plus: 0 %}
           <article class="aruna-review-card">
             <div class="aruna-review-card__top">
               <div class="aruna-review-card__identity">
                 <strong>{{ review.customer_name.value | default: 'Cliente' | escape }}</strong>
-                {% if review.verified.value == true %}
+                {% if show_verified and review.verified.value == true %}
                   <span class="aruna-review-badge">✓ Compra verificada</span>
                 {% endif %}
                 {% if review.featured.value == true %}
@@ -96,14 +131,20 @@
               </div>
             {% endif %}
 
-            <div class="aruna-review-card__footer">
-              {% if review.source.value != blank %}<span>Origem: {{ review.source.value | escape }}</span>{% endif %}
-              {% if review.helpful_count.value > 0 %}<span>{{ review.helpful_count.value }} acharam útil</span>{% endif %}
-            </div>
+            {% if show_source or show_helpful %}
+              <div class="aruna-review-card__footer">
+                {% if show_source and review.source.value != blank %}<span>Origem: {{ review.source.value | escape }}</span>{% endif %}
+                {% if show_helpful and review.helpful_count.value > 0 %}<span>{{ review.helpful_count.value }} acharam útil</span>{% endif %}
+              </div>
+            {% endif %}
           </article>
         {% endif %}
       {% endfor %}
     </div>
+
+    {% if review_count > reviews_per_page %}
+      <p class="aruna-reviews__more-note">Exibindo {{ reviews_per_page }} de {{ review_count }} avaliações.</p>
+    {% endif %}
   {% else %}
     <div class="aruna-reviews__empty">
       <strong>Ainda não há avaliações publicadas.</strong>
@@ -119,10 +160,10 @@
   "enabled_on": { "templates": ["product"] },
   "stylesheet": "aruna-reviews.css",
   "settings": [
-    { "type": "text", "id": "heading", "label": "Título", "default": "Avaliações de clientes" },
-    { "type": "color", "id": "accent_color", "label": "Cor principal", "default": "#0B4FA3" },
-    { "type": "color", "id": "star_color", "label": "Cor das estrelas", "default": "#F5B301" },
-    { "type": "select", "id": "visual_theme", "label": "Tema", "default": "aruna-premium", "options": [
+    { "type": "text", "id": "heading", "label": "Título de fallback", "default": "Avaliações de clientes" },
+    { "type": "color", "id": "accent_color", "label": "Cor principal de fallback", "default": "#0B4FA3" },
+    { "type": "color", "id": "star_color", "label": "Cor das estrelas de fallback", "default": "#F5B301" },
+    { "type": "select", "id": "visual_theme", "label": "Tema de fallback", "default": "aruna-premium", "options": [
       {"value":"compat-01","label":"Compatibilidade 01 — Clássico"},
       {"value":"compat-02","label":"Compatibilidade 02 — Moderno"},
       {"value":"compat-03","label":"Compatibilidade 03 — Marketplace"},
