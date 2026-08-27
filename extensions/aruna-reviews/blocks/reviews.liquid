@@ -54,6 +54,7 @@
   id="aruna-reviews"
   class="aruna-reviews aruna-reviews--{{ visual_theme }}"
   style="--aruna-accent: {{ accent_color }}; --aruna-star: {{ star_color }};"
+  data-aruna-reviews-root
 >
   <header class="aruna-reviews__header">
     <div>
@@ -70,6 +71,40 @@
       <small>{{ review_count }} {% if review_count == 1 %}avaliação{% else %}avaliações{% endif %}</small>
     </div>
   </header>
+
+  <div class="aruna-review-submit">
+    <button type="button" class="aruna-review-submit__toggle" data-aruna-review-toggle aria-expanded="false">Escrever uma avaliação</button>
+    <form
+      class="aruna-review-submit__form"
+      data-aruna-review-form
+      data-shop-domain="{{ shop.permanent_domain | escape }}"
+      data-product-id="{{ product.id }}"
+      data-product-handle="{{ product.handle | escape }}"
+      data-product-title="{{ product.title | escape }}"
+      hidden
+    >
+      <div class="aruna-review-submit__grid">
+        <label>Seu nome<input name="customer_name" type="text" maxlength="200" autocomplete="name" required></label>
+        <label>E-mail <span>(opcional)</span><input name="customer_email" type="email" maxlength="320" autocomplete="email"></label>
+        <label>Nota
+          <select name="rating" required>
+            <option value="5">5 — Excelente</option>
+            <option value="4">4 — Muito bom</option>
+            <option value="3">3 — Bom</option>
+            <option value="2">2 — Regular</option>
+            <option value="1">1 — Ruim</option>
+          </select>
+        </label>
+        <label>Título <span>(opcional)</span><input name="title" type="text" maxlength="300"></label>
+      </div>
+      <label>Sua avaliação<textarea name="body" rows="5" maxlength="5000" required></textarea></label>
+      <div class="aruna-review-submit__actions">
+        <button type="submit" class="aruna-review-submit__send">Enviar avaliação</button>
+        <span data-aruna-review-status role="status" aria-live="polite"></span>
+      </div>
+      <small>A avaliação passa por moderação antes de aparecer na loja.</small>
+    </form>
+  </div>
 
   {% if review_count > 0 %}
     <div class="aruna-reviews__toolbar aruna-reviews__toolbar--info">
@@ -159,6 +194,7 @@
   "target": "section",
   "enabled_on": { "templates": ["product"] },
   "stylesheet": "aruna-reviews.css",
+  "javascript": "aruna-submission.js",
   "settings": [
     { "type": "text", "id": "heading", "label": "Título de fallback", "default": "Avaliações de clientes" },
     { "type": "color", "id": "accent_color", "label": "Cor principal de fallback", "default": "#0B4FA3" },
