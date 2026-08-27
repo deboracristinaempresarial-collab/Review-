@@ -5,11 +5,27 @@ const ADMIN_URL = 'https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-r
 const REVIEW_TYPE = '$app:review';
 const QUESTION_TYPE = '$app:question';
 const STORAGE_KEY = 'arunaReviewNativeSyncKeyV1';
+const BK_AUTO_KEY = 'arunaReviewBkAutoMigrationV1';
 
 const CREATE_METAOBJECT = `mutation ArunaInboxCreate($metaobject: MetaobjectCreateInput!) {
   metaobjectCreate(metaobject: $metaobject) {
     metaobject { id }
     userErrors { field message code }
+  }
+}`;
+
+const LIST_EXISTING_REVIEWS = `query ArunaExistingReviews($after: String) {
+  metaobjects(type: "$app:review", first: 250, after: $after) {
+    nodes { fields { key value } }
+    pageInfo { hasNextPage endCursor }
+  }
+}`;
+
+const LIST_PRODUCTS = `query ArunaProducts($after: String) {
+  shop { myshopifyDomain }
+  products(first: 100, after: $after, sortKey: UPDATED_AT, reverse: true) {
+    nodes { id title handle }
+    pageInfo { hasNextPage endCursor }
   }
 }`;
 
@@ -34,14 +50,17 @@ async function getSyncKey() {
 }
 
 async function getShopContext() {
-  const result = await shopify.query(`query ArunaShopContext {
-    shop { myshopifyDomain }
-    products(first: 100, sortKey: UPDATED_AT, reverse: true) { nodes { id title handle } }
-  }`);
-  return {
-    shopDomain: result?.data?.shop?.myshopifyDomain || '',
-    products: result?.data?.products?.nodes || [],
-  };
+  let after = null;
+  let shopDomain = '';
+  const products = [];
+  do {
+    const result = await shopify.query(LIST_PRODUCTS, {variables:{after}});
+    shopDomain ||= result?.data?.shop?.myshopifyDomain || '';
+    products.push(...(result?.data?.products?.nodes || []));
+    const pageInfo = result?.data?.products?.pageInfo;
+    after = pageInfo?.hasNextPage ? pageInfo.endCursor : null;
+  } while (after && products.length < 250);
+  return {shopDomain, products:products.slice(0,250)};
 }
 
 async function adminCall(syncKey, body) {
@@ -90,6 +109,36 @@ async function createShopifyItem(item) {
   if (errors.length) throw new Error(errors[0]?.message || 'Falha ao salvar item na Shopify.');
 }
 
+function fieldsToObject(fields=[]) {
+  const out = {};
+  for (const item of fields) out[item.key] = item.value;
+  return out;
+}
+
+function fingerprint(review) {
+  const external = String(review.external_id || '').trim().toLowerCase();
+  if (external) return `ext|${review.product_id || review.product_handle || ''}|${external}`;
+  return [
+    'body',
+    String(review.product_id || review.product_handle || '').toLowerCase(),
+    String(review.customer_name || '').trim().toLowerCase(),
+    String(Number(review.rating)||0),
+    String(review.body || review.title || '').trim().toLowerCase().replace(/\s+/g,' ').slice(0,900),
+  ].join('|');
+}
+
+async function existingReviewFingerprints() {
+  let after = null;
+  const seen = new Set();
+  do {
+    const result = await shopify.query(LIST_EXISTING_REVIEWS,{variables:{after}});
+    const connection = result?.data?.metaobjects;
+    for (const node of connection?.nodes || []) seen.add(fingerprint(fieldsToObject(node.fields)));
+    after = connection?.pageInfo?.hasNextPage ? connection.pageInfo.endCursor : null;
+  } while (after && seen.size < 5000);
+  return seen;
+}
+
 async function syncInbox(syncKey) {
   const inbox = await adminCall(syncKey,{action:'inbox',limit:100});
   const items = Array.isArray(inbox.items) ? inbox.items : [];
@@ -115,11 +164,15 @@ async function setupNativeBridge() {
   const boot = await adminCall(syncKey,{action:'bootstrap',shop_domain:shopDomain});
   await adminCall(syncKey,{action:'catalog_update',products});
   await shopify.storage.set('arunaReviewSubmissionTokenV1', boot.submission_token || '');
+
   const api = {
+    shopDomain,
+    products,
     syncNow: () => syncInbox(syncKey),
     refreshCatalog: async () => {
       const context = await getShopContext();
       await adminCall(syncKey,{action:'catalog_update',products:context.products});
+      api.products = context.products;
       return context.products;
     },
     createPair: async () => {
@@ -130,8 +183,39 @@ async function setupNativeBridge() {
     },
     connections: () => adminCall(syncKey,{action:'connections'}),
     revokeConnection: (id) => adminCall(syncKey,{action:'revoke_connection',id}),
-    shopDomain,
+    scanBkProduct: async (product) => {
+      const result = await adminCall(syncKey,{action:'scan_storefront',product,max_reviews:250});
+      const rows = Array.isArray(result?.reviews) ? result.reviews : [];
+      return rows.filter(row => row?.source === 'bk_public_migration');
+    },
+    migrateBkAll: async (onProgress) => {
+      const list = await api.refreshCatalog();
+      const seen = await existingReviewFingerprints();
+      let found = 0, imported = 0, skipped = 0, productsWithReviews = 0;
+      for (let index = 0; index < list.length; index++) {
+        const product = list[index];
+        let rows = [];
+        try { rows = await api.scanBkProduct(product); } catch {}
+        if (rows.length) productsWithReviews++;
+        found += rows.length;
+        for (const payload of rows) {
+          const key = fingerprint(payload);
+          if (seen.has(key)) { skipped++; continue; }
+          try {
+            await createShopifyItem({kind:'review',payload:{...payload,status:'approved',source:'bk_public_migration'}});
+            seen.add(key);
+            imported++;
+          } catch { skipped++; }
+        }
+        if (typeof onProgress === 'function') onProgress({current:index+1,total:list.length,product,found,imported,skipped});
+      }
+      const result = {productsScanned:list.length,productsWithReviews,found,imported,skipped,finishedAt:new Date().toISOString()};
+      await shopify.storage.set(BK_AUTO_KEY,result);
+      return result;
+    },
+    lastBkMigration: () => shopify.storage.get(BK_AUTO_KEY),
   };
+
   globalThis.arunaReviewNative = api;
   await syncInbox(syncKey);
   setInterval(() => syncInbox(syncKey).catch(() => {}), 30000);
@@ -148,58 +232,39 @@ function mountBridgeControls(api) {
   const page = document.querySelector('s-page');
   if (!page || page.querySelector('[data-aruna-native-bridge]')) return;
   const section = el('s-section');
-  section.setAttribute('heading','Importador Aruna');
+  section.setAttribute('heading','Extensão importadora');
   section.setAttribute('data-aruna-native-bridge','true');
   const stack = el('s-stack');
   stack.setAttribute('direction','block');
   stack.setAttribute('gap','small');
-  const intro = el('s-text','Conecte a extensão Aruna Review Importer sem usuário e senha. O código vale por 10 minutos e leva os produtos da Shopify para o seletor da extensão.');
+  const intro = el('s-text','Conecte a Aruna Review Importer para Shopee, AliExpress, Amazon, Mercado Livre e outros. A migração do BK fica dentro do próprio app.');
   const actions = el('s-stack');
   actions.setAttribute('direction','inline');
   actions.setAttribute('gap','small');
-  const pairButton = el('s-button','Gerar código de conexão');
+  const pairButton = el('s-button','Gerar código da extensão');
   pairButton.setAttribute('variant','primary');
-  const syncButton = el('s-button','Sincronizar caixa agora');
-  const catalogButton = el('s-button','Atualizar produtos');
+  const syncButton = el('s-button','Sincronizar caixa');
   const status = el('s-text','');
   pairButton.addEventListener('click', async () => {
     pairButton.disabled = true;
-    status.textContent = 'Gerando código e atualizando produtos…';
+    status.textContent = 'Gerando código…';
     try {
       const pair = await api.createPair();
       const expiry = pair?.expires_at ? new Date(pair.expires_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
       status.textContent = `Código: ${pair.code}${expiry ? ` · válido até ${expiry}` : ''}`;
-    } catch {
-      status.textContent = 'Não foi possível gerar o código agora.';
-    } finally {
-      pairButton.disabled = false;
-    }
+    } catch { status.textContent = 'Não foi possível gerar o código agora.'; }
+    finally { pairButton.disabled = false; }
   });
   syncButton.addEventListener('click', async () => {
     syncButton.disabled = true;
     status.textContent = 'Sincronizando…';
     try {
       const result = await api.syncNow();
-      status.textContent = result.synced ? `${result.synced} item(ns) sincronizados.` : 'Caixa de entrada já está em dia.';
-    } catch {
-      status.textContent = 'Não foi possível sincronizar agora.';
-    } finally {
-      syncButton.disabled = false;
-    }
+      status.textContent = result.synced ? `${result.synced} item(ns) sincronizados.` : 'Tudo sincronizado.';
+    } catch { status.textContent = 'Não foi possível sincronizar agora.'; }
+    finally { syncButton.disabled = false; }
   });
-  catalogButton.addEventListener('click', async () => {
-    catalogButton.disabled = true;
-    status.textContent = 'Atualizando produtos…';
-    try {
-      const products = await api.refreshCatalog();
-      status.textContent = `${products.length} produto(s) enviados para o importador.`;
-    } catch {
-      status.textContent = 'Não foi possível atualizar os produtos agora.';
-    } finally {
-      catalogButton.disabled = false;
-    }
-  });
-  actions.append(pairButton,syncButton,catalogButton);
+  actions.append(pairButton,syncButton);
   stack.append(intro,actions,status);
   section.appendChild(stack);
   page.appendChild(section);
@@ -207,11 +272,8 @@ function mountBridgeControls(api) {
 
 export default async function extension() {
   let api = null;
-  try {
-    api = await setupNativeBridge();
-  } catch (error) {
-    console.error('Aruna Review native bridge unavailable', error);
-  }
+  try { api = await setupNativeBridge(); }
+  catch (error) { console.error('Aruna Review native bridge unavailable', error); }
   const mounted = mountAppHome();
   if (api) queueMicrotask(() => mountBridgeControls(api));
   return mounted;
