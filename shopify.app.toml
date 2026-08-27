@@ -27,7 +27,7 @@ name = "Aruna Review"
 description = "Avaliações de produtos gerenciadas pelo Aruna Review"
 display_name_field = "customer_name"
 access.admin = "merchant_read_write"
-access.storefront = "none"
+access.storefront = "public_read"
 capabilities.publishable = true
 
 [metaobjects.app.review.fields.product_id]
@@ -113,3 +113,162 @@ type = "single_line_text_field"
 [metaobjects.app.review.fields.import_batch]
 name = "Lote de importação"
 type = "single_line_text_field"
+
+[metaobjects.app.question]
+name = "Aruna Review - Pergunta"
+description = "Perguntas e respostas de produtos gerenciadas pelo Aruna Review"
+display_name_field = "question"
+access.admin = "merchant_read_write"
+access.storefront = "public_read"
+capabilities.publishable = true
+
+[metaobjects.app.question.fields.product_id]
+name = "ID do produto"
+type = "single_line_text_field"
+
+[metaobjects.app.question.fields.product_handle]
+name = "Handle do produto"
+type = "single_line_text_field"
+
+[metaobjects.app.question.fields.product_title]
+name = "Produto"
+type = "single_line_text_field"
+
+[metaobjects.app.question.fields.customer_name]
+name = "Cliente"
+type = "single_line_text_field"
+
+[metaobjects.app.question.fields.customer_email]
+name = "E-mail"
+type = "single_line_text_field"
+
+[metaobjects.app.question.fields.question]
+name = "Pergunta"
+type = "multi_line_text_field"
+
+[metaobjects.app.question.fields.status]
+name = "Status"
+type = "single_line_text_field"
+
+[metaobjects.app.question.fields.merchant_answer]
+name = "Resposta da loja"
+type = "multi_line_text_field"
+
+[metaobjects.app.question.fields.submitted_at]
+name = "Enviada em"
+type = "date_time"
+
+[metaobjects.app.question.fields.source]
+name = "Origem"
+type = "single_line_text_field"
+
+[metaobjects.app.settings]
+name = "Aruna Review - Configurações"
+description = "Configurações globais do Aruna Review"
+display_name_field = "name"
+access.admin = "merchant_read_write"
+access.storefront = "public_read"
+capabilities.publishable = true
+
+[metaobjects.app.settings.fields.name]
+name = "Nome"
+type = "single_line_text_field"
+
+[metaobjects.app.settings.fields.moderation_mode]
+name = "Moderação"
+type = "single_line_text_field"
+
+[metaobjects.app.settings.fields.show_verified]
+name = "Mostrar compra verificada"
+type = "boolean"
+
+[metaobjects.app.settings.fields.show_source]
+name = "Mostrar origem"
+type = "boolean"
+
+[metaobjects.app.settings.fields.show_helpful]
+name = "Mostrar votos úteis"
+type = "boolean"
+
+[metaobjects.app.settings.fields.show_qa]
+name = "Mostrar perguntas e respostas"
+type = "boolean"
+
+[metaobjects.app.settings.fields.heading]
+name = "Título das avaliações"
+type = "single_line_text_field"
+
+[metaobjects.app.settings.fields.accent_color]
+name = "Cor principal"
+type = "single_line_text_field"
+
+[metaobjects.app.settings.fields.star_color]
+name = "Cor das estrelas"
+type = "single_line_text_field"
+
+[metaobjects.app.settings.fields.visual_theme]
+name = "Tema visual"
+type = "single_line_text_field"
+
+[metaobjects.app.settings.fields.reviews_per_page]
+name = "Avaliações por página"
+type = "number_integer"
+
+[metaobjects.app.settings.fields.request_delay_days]
+name = "Dias para solicitar avaliação"
+type = "number_integer"
+
+[metaobjects.app.settings.fields.request_subject]
+name = "Assunto da solicitação"
+type = "single_line_text_field"
+
+[metaobjects.app.settings.fields.request_message]
+name = "Mensagem da solicitação"
+type = "multi_line_text_field"
+
+[metaobjects.app.review_request]
+name = "Aruna Review - Solicitação"
+description = "Histórico de solicitações de avaliação"
+display_name_field = "recipient_name"
+access.admin = "merchant_read_write"
+access.storefront = "none"
+
+[metaobjects.app.review_request.fields.product_id]
+name = "ID do produto"
+type = "single_line_text_field"
+
+[metaobjects.app.review_request.fields.product_handle]
+name = "Handle do produto"
+type = "single_line_text_field"
+
+[metaobjects.app.review_request.fields.product_title]
+name = "Produto"
+type = "single_line_text_field"
+
+[metaobjects.app.review_request.fields.recipient_name]
+name = "Destinatário"
+type = "single_line_text_field"
+
+[metaobjects.app.review_request.fields.recipient_contact]
+name = "Contato"
+type = "single_line_text_field"
+
+[metaobjects.app.review_request.fields.channel]
+name = "Canal"
+type = "single_line_text_field"
+
+[metaobjects.app.review_request.fields.status]
+name = "Status"
+type = "single_line_text_field"
+
+[metaobjects.app.review_request.fields.review_link]
+name = "Link"
+type = "url"
+
+[metaobjects.app.review_request.fields.created_at]
+name = "Criada em"
+type = "date_time"
+
+[metaobjects.app.review_request.fields.sent_at]
+name = "Enviada em"
+type = "date_time"
