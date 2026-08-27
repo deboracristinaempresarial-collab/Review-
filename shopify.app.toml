@@ -1,19 +1,116 @@
 name = "Aruna Review"
 client_id = "662fb6d03dd458e822b4b9baed65f70c"
-application_url = "https://deboracristinaempresarial-collab.github.io/Review-/"
+application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = false
+include_config_on_deploy = true
 
 [access_scopes]
 scopes = "read_products"
 use_legacy_install_flow = false
 
+[access.admin]
+embedded_app_direct_api_access = true
+direct_api_mode = "online"
+
 [auth]
 redirect_urls = [
-  "https://deboracristinaempresarial-collab.github.io/Review-/"
+  "https://shopify.dev/apps/default-app-home/api/auth"
 ]
 
 [webhooks]
 api_version = "2026-07"
+
+[metaobjects.app.review]
+name = "Aruna Review"
+description = "Avaliações de produtos gerenciadas pelo Aruna Review"
+display_name_field = "customer_name"
+access.admin = "merchant_read_write"
+access.storefront = "none"
+capabilities.publishable = true
+
+[metaobjects.app.review.fields.product_id]
+name = "ID do produto"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.product_handle]
+name = "Handle do produto"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.product_title]
+name = "Produto"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.customer_name]
+name = "Cliente"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.customer_email]
+name = "E-mail"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.rating]
+name = "Nota"
+type = "number_integer"
+
+[metaobjects.app.review.fields.title]
+name = "Título"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.body]
+name = "Avaliação"
+type = "multi_line_text_field"
+
+[metaobjects.app.review.fields.status]
+name = "Status"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.verified]
+name = "Compra verificada"
+type = "boolean"
+
+[metaobjects.app.review.fields.verification_status]
+name = "Status da verificação"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.merchant_reply]
+name = "Resposta da loja"
+type = "multi_line_text_field"
+
+[metaobjects.app.review.fields.featured]
+name = "Destaque"
+type = "boolean"
+
+[metaobjects.app.review.fields.source]
+name = "Origem"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.external_id]
+name = "ID externo"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.review_date]
+name = "Data da avaliação"
+type = "date_time"
+
+[metaobjects.app.review.fields.media_urls]
+name = "Fotos e vídeos"
+type = "json"
+
+[metaobjects.app.review.fields.helpful_count]
+name = "Votos úteis"
+type = "number_integer"
+
+[metaobjects.app.review.fields.language]
+name = "Idioma"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.order_id]
+name = "Pedido"
+type = "single_line_text_field"
+
+[metaobjects.app.review.fields.import_batch]
+name = "Lote de importação"
+type = "single_line_text_field"
