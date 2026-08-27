@@ -7,56 +7,95 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <main class="app">
-    <header>
-      <p class="eyebrow">ARUNA REVIEW</p>
-      <h1>Importer</h1>
-      <p class="sub">Leve avaliações públicas para o produto certo da sua Shopify.</p>
+  <main class="shell">
+    <header class="hero">
+      <div class="brand-row">
+        <div class="brand-mark">A</div>
+        <div>
+          <p class="eyebrow">ARUNA REVIEW</p>
+          <h1>Importador</h1>
+        </div>
+        <span class="version">v1.1</span>
+      </div>
+      <p class="sub">Avaliações públicas da página aberta → produto certo da sua Shopify.</p>
     </header>
 
-    <section id="pairView" class="card" hidden>
-      <h2>Conectar à Shopify</h2>
-      <p>Abra Aruna Review na Shopify, toque em <strong>Gerar código de conexão</strong> e digite o código aqui.</p>
-      <label>Código de 8 caracteres
-        <input id="pairCode" maxlength="8" autocomplete="off" spellcheck="false" placeholder="ABCD2345">
-      </label>
-      <button id="pairButton" class="primary">Conectar</button>
+    <section id="pairView" class="panel pair" hidden>
+      <div class="step-chip">1</div>
+      <h2>Conecte ao seu Aruna Review</h2>
+      <p class="muted">Na Shopify, abra <strong>Aruna Review</strong> e toque em <strong>Gerar código de conexão</strong>. O código vale por 10 minutos.</p>
+      <label class="field-label" for="pairCode">Código de conexão</label>
+      <input id="pairCode" class="code-input" maxlength="8" autocomplete="off" spellcheck="false" placeholder="ABCD2345">
+      <button id="pairButton" class="btn primary">Conectar à Shopify</button>
       <p id="pairStatus" class="status" role="status"></p>
     </section>
 
     <section id="mainView" hidden>
-      <div class="card connected">
-        <div>
-          <span class="dot"></span>
-          <strong>Conectado ao Aruna Review</strong>
-          <small id="shopDomain"></small>
+      <section class="panel connection">
+        <div class="connection-left">
+          <span class="live-dot"></span>
+          <div>
+            <strong>Aruna Review conectado</strong>
+            <small id="shopDomain"></small>
+          </div>
         </div>
-        <button id="disconnectButton" class="link">Desconectar</button>
-      </div>
-
-      <section class="card">
-        <label>Produto de destino
-          <select id="productSelect"></select>
-        </label>
-        <button id="refreshCatalogButton" class="secondary">Atualizar produtos</button>
+        <button id="disconnectButton" class="text-btn">Sair</button>
       </section>
 
-      <section class="card">
-        <div class="row between">
+      <section class="panel">
+        <div class="section-head">
           <div>
-            <h2>Avaliações da página</h2>
-            <small id="sourceLabel">Detectando origem…</small>
+            <span class="mini-label">DESTINO</span>
+            <h2>Produto da Shopify</h2>
           </div>
-          <span id="countBadge" class="badge">0</span>
+          <button id="refreshCatalogButton" class="icon-btn" title="Atualizar produtos">↻</button>
         </div>
-        <button id="scanButton" class="primary">Ler página aberta</button>
+        <select id="productSelect" class="select"></select>
+      </section>
+
+      <section class="panel scan-panel">
+        <div class="section-head">
+          <div>
+            <span class="mini-label">ORIGEM</span>
+            <h2>Avaliações encontradas</h2>
+            <small id="sourceLabel">Abra uma página de produto.</small>
+          </div>
+          <span id="countBadge" class="count">0</span>
+        </div>
+
+        <button id="scanButton" class="btn primary scan">Ler avaliações desta página</button>
+
+        <div id="filterBar" class="filter-bar" hidden>
+          <select id="ratingFilter" class="mini-select" aria-label="Filtrar nota">
+            <option value="all">Todas as notas</option>
+            <option value="5">5 estrelas</option>
+            <option value="4">4+ estrelas</option>
+            <option value="3">3+ estrelas</option>
+          </select>
+          <label class="toggle"><input id="mediaOnly" type="checkbox"> Com mídia</label>
+        </div>
+
+        <div id="selectionBar" class="selection-bar" hidden>
+          <button id="selectAllButton" class="text-btn">Selecionar todas</button>
+          <button id="clearSelectionButton" class="text-btn">Limpar</button>
+          <span id="selectedCount">0 selecionadas</span>
+        </div>
+
         <div id="preview" class="preview"></div>
       </section>
 
-      <section class="card">
-        <label class="check"><input id="importedOnly" type="checkbox" checked> Marcar como importadas e enviar somente registros válidos</label>
-        <button id="sendButton" class="primary" disabled>Enviar para Aruna Review</button>
+      <section class="panel send-panel">
+        <label class="safe-row">
+          <input id="importedOnly" type="checkbox" checked>
+          <span><strong>Importação segura</strong><small>Só envia registros válidos e marca como importados.</small></span>
+        </label>
+        <button id="sendButton" class="btn primary" disabled>Importar selecionadas</button>
         <p id="status" class="status" role="status"></p>
+      </section>
+
+      <section id="historyPanel" class="panel history" hidden>
+        <span class="mini-label">ÚLTIMA IMPORTAÇÃO</span>
+        <div class="history-row"><strong id="historyCount">0 avaliações</strong><small id="historyWhen"></small></div>
       </section>
     </section>
   </main>
