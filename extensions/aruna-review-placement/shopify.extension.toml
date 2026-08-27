@@ -1,15 +1,11 @@
 api_version = "2026-07"
 
 [[extensions]]
-name = "Aruna Review - Tema"
-handle = "aruna-review-placement"
+name = "Aruna Review - Tema do produto"
+handle = "aruna-review-product-theme"
 uid = "54a9a847-0da6-4d1c-9414-2f94f3cf7c62"
 type = "ui_extension"
 
 [[extensions.targeting]]
 target = "admin.product-details.block.render"
-module = "./src/Placement.jsx"
-
-[[extensions.targeting]]
-target = "admin.collection-details.block.render"
 module = "./src/Placement.jsx"
