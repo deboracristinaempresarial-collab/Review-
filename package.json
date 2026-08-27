@@ -9,7 +9,7 @@
     "dev": "shopify app dev --config production"
   },
   "dependencies": {
-    "@shopify/ui-extensions": "2026.7.0",
+    "@shopify/ui-extensions": "2026.7.x",
     "preact": "^10.27.0"
   },
   "engines": {
