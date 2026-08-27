@@ -1,5 +1,17 @@
 (() => {
   const ENDPOINT = 'https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-review-native-submit';
+  const MEDIA_ENDPOINT = 'https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-review-native-media';
+
+  async function uploadMedia(form, file) {
+    const data = new FormData();
+    data.set('shop_domain', form.dataset.shopDomain || '');
+    data.set('product_handle', form.dataset.productHandle || 'product');
+    data.set('file', file);
+    const response = await fetch(MEDIA_ENDPOINT, {method:'POST',body:data});
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.url) throw new Error(result.error || 'upload_failed');
+    return result.url;
+  }
 
   function init(root) {
     const toggle = root.querySelector('[data-aruna-review-toggle]');
@@ -19,6 +31,7 @@
       event.preventDefault();
       const submit = form.querySelector('[type="submit"]');
       const data = new FormData(form);
+      const files = [...(form.querySelector('[name="media"]')?.files || [])].slice(0, 4);
       const payload = {
         shop_domain: form.dataset.shopDomain,
         kind: 'review',
@@ -31,16 +44,25 @@
         title: data.get('title'),
         body: data.get('body'),
         language: document.documentElement.lang || 'pt-BR',
+        media_urls: [],
       };
 
       if (!payload.customer_name || !payload.rating || !String(payload.body || '').trim()) {
         status.textContent = 'Preencha seu nome, a nota e sua avaliação.';
         return;
       }
+      if (files.some((file) => file.size > 25 * 1024 * 1024)) {
+        status.textContent = 'Cada foto ou vídeo deve ter no máximo 25 MB.';
+        return;
+      }
 
       submit.disabled = true;
-      status.textContent = 'Enviando sua avaliação…';
       try {
+        if (files.length) {
+          status.textContent = `Enviando ${files.length} arquivo(s)…`;
+          for (const file of files) payload.media_urls.push(await uploadMedia(form,file));
+        }
+        status.textContent = 'Enviando sua avaliação…';
         const response = await fetch(ENDPOINT, {
           method: 'POST',
           headers: {'content-type':'application/json'},
