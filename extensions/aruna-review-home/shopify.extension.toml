@@ -8,7 +8,7 @@ type = "ui_extension"
 
 [[extensions.targeting]]
 target = "admin.app.home.render"
-module = "./src/Entry.jsx"
+module = "./src/EntryV2.jsx"
 
 [extensions.capabilities]
 network_access = true
