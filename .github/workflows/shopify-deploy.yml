@@ -26,6 +26,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install app dependencies
+        run: npm install
+
       - name: Install Shopify CLI
         run: npm install --global @shopify/cli@latest
 
