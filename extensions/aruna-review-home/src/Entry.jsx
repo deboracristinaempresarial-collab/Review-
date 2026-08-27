@@ -51,42 +51,25 @@ async function adminCall(syncKey, body) {
 
 function reviewFields(payload) {
   return [
-    field('product_id', payload.product_id || ''),
-    field('product_handle', payload.product_handle || ''),
-    field('product_title', payload.product_title || ''),
-    field('customer_name', payload.customer_name || 'Cliente'),
-    field('customer_email', payload.customer_email || ''),
-    field('rating', Math.max(1, Math.min(5, Number(payload.rating) || 5))),
-    field('title', payload.title || ''),
-    field('body', payload.body || ''),
-    field('status', payload.status || 'pending'),
-    field('verified', payload.verified === true ? 'true' : 'false'),
-    field('verification_status', payload.verified === true ? 'verified' : 'unverified'),
-    field('merchant_reply', payload.merchant_reply || ''),
-    field('featured', payload.featured === true ? 'true' : 'false'),
-    field('source', payload.source || 'storefront'),
-    field('external_id', payload.external_id || ''),
+    field('product_id', payload.product_id || ''),field('product_handle', payload.product_handle || ''),field('product_title', payload.product_title || ''),
+    field('customer_name', payload.customer_name || 'Cliente'),field('customer_email', payload.customer_email || ''),
+    field('rating', Math.max(1, Math.min(5, Number(payload.rating) || 5))),field('title', payload.title || ''),field('body', payload.body || ''),
+    field('status', payload.status || 'pending'),field('verified', payload.verified === true ? 'true' : 'false'),
+    field('verification_status', payload.verified === true ? 'verified' : 'unverified'),field('merchant_reply', payload.merchant_reply || ''),
+    field('featured', payload.featured === true ? 'true' : 'false'),field('source', payload.source || 'storefront'),field('external_id', payload.external_id || ''),
     field('review_date', payload.review_date || new Date().toISOString()),
     field('media_urls', JSON.stringify(Array.isArray(payload.media_urls) ? payload.media_urls.slice(0, 8) : [])),
-    field('helpful_count', Math.max(0, Number(payload.helpful_count) || 0)),
-    field('language', payload.language || 'pt-BR'),
-    field('order_id', payload.order_id || ''),
-    field('import_batch', payload.import_batch || ''),
+    field('helpful_count', Math.max(0, Number(payload.helpful_count) || 0)),field('language', payload.language || 'pt-BR'),
+    field('order_id', payload.order_id || ''),field('import_batch', payload.import_batch || ''),
   ].filter(Boolean);
 }
 
 function questionFields(payload) {
   return [
-    field('product_id', payload.product_id || ''),
-    field('product_handle', payload.product_handle || ''),
-    field('product_title', payload.product_title || ''),
-    field('customer_name', payload.customer_name || 'Cliente'),
-    field('customer_email', payload.customer_email || ''),
-    field('question', payload.question || ''),
-    field('status', payload.status || 'pending'),
-    field('merchant_answer', payload.merchant_answer || ''),
-    field('submitted_at', payload.submitted_at || new Date().toISOString()),
-    field('source', payload.source || 'storefront'),
+    field('product_id', payload.product_id || ''),field('product_handle', payload.product_handle || ''),field('product_title', payload.product_title || ''),
+    field('customer_name', payload.customer_name || 'Cliente'),field('customer_email', payload.customer_email || ''),field('question', payload.question || ''),
+    field('status', payload.status || 'pending'),field('merchant_answer', payload.merchant_answer || ''),
+    field('submitted_at', payload.submitted_at || new Date().toISOString()),field('source', payload.source || 'storefront'),
   ].filter(Boolean);
 }
 
@@ -125,7 +108,6 @@ async function setupNativeBridge() {
   const shopDomain = await getShopDomain();
   const boot = await adminCall(syncKey,{action:'bootstrap',shop_domain:shopDomain});
   await shopify.storage.set('arunaReviewSubmissionTokenV1', boot.submission_token || '');
-
   const api = {
     syncNow: () => syncInbox(syncKey),
     createPair: async () => {
@@ -143,11 +125,68 @@ async function setupNativeBridge() {
   return api;
 }
 
+function el(name, text) {
+  const node = document.createElement(name);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function mountBridgeControls(api) {
+  const page = document.querySelector('s-page');
+  if (!page || page.querySelector('[data-aruna-native-bridge]')) return;
+  const section = el('s-section');
+  section.setAttribute('heading','Importador Aruna');
+  section.setAttribute('data-aruna-native-bridge','true');
+  const stack = el('s-stack');
+  stack.setAttribute('direction','block');
+  stack.setAttribute('gap','small');
+  const intro = el('s-text','Conecte a extensão Aruna Review Importer sem usuário e senha. O código vale por 10 minutos.');
+  const actions = el('s-stack');
+  actions.setAttribute('direction','inline');
+  actions.setAttribute('gap','small');
+  const pairButton = el('s-button','Gerar código de conexão');
+  pairButton.setAttribute('variant','primary');
+  const syncButton = el('s-button','Sincronizar caixa agora');
+  const status = el('s-text','');
+  pairButton.addEventListener('click', async () => {
+    pairButton.disabled = true;
+    status.textContent = 'Gerando código…';
+    try {
+      const pair = await api.createPair();
+      const expiry = pair?.expires_at ? new Date(pair.expires_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
+      status.textContent = `Código: ${pair.code}${expiry ? ` · válido até ${expiry}` : ''}`;
+    } catch {
+      status.textContent = 'Não foi possível gerar o código agora.';
+    } finally {
+      pairButton.disabled = false;
+    }
+  });
+  syncButton.addEventListener('click', async () => {
+    syncButton.disabled = true;
+    status.textContent = 'Sincronizando…';
+    try {
+      const result = await api.syncNow();
+      status.textContent = result.synced ? `${result.synced} item(ns) sincronizados.` : 'Caixa de entrada já está em dia.';
+    } catch {
+      status.textContent = 'Não foi possível sincronizar agora.';
+    } finally {
+      syncButton.disabled = false;
+    }
+  });
+  actions.append(pairButton,syncButton);
+  stack.append(intro,actions,status);
+  section.appendChild(stack);
+  page.appendChild(section);
+}
+
 export default async function extension() {
+  let api = null;
   try {
-    await setupNativeBridge();
+    api = await setupNativeBridge();
   } catch (error) {
     console.error('Aruna Review native bridge unavailable', error);
   }
-  return mountAppHome();
+  const mounted = mountAppHome();
+  if (api) queueMicrotask(() => mountBridgeControls(api));
+  return mounted;
 }
