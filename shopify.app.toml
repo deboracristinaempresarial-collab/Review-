@@ -1,6 +1,6 @@
 name = "Aruna Review"
 client_id = "662fb6d03dd458e822b4b9baed65f70c"
-application_url = "https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-reviews-shopify"
+application_url = "https://deboracristinaempresarial-collab.github.io/Review-/"
 embedded = true
 
 [build]
@@ -12,7 +12,7 @@ use_legacy_install_flow = false
 
 [auth]
 redirect_urls = [
-  "https://txqsqudkhyehxkwmmart.supabase.co/functions/v1/aruna-reviews-shopify"
+  "https://deboracristinaempresarial-collab.github.io/Review-/"
 ]
 
 [webhooks]
