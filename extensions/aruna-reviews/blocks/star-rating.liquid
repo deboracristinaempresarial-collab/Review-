@@ -1,12 +1,30 @@
-<div
-  class="aruna-rating-badge"
-  data-aruna-rating
-  data-product-id="{{ product.id }}"
-  style="--aruna-star: {{ block.settings.star_color }};"
->
-  <span class="aruna-stars" data-rating-stars aria-label="0 de 5 estrelas">☆☆☆☆☆</span>
-  <strong data-rating-average>0,0</strong>
-  <span class="aruna-rating-badge__count">(<span data-rating-total>0</span>)</span>
+{% liquid
+  assign review_items = shop.metaobjects['$app:review'].values
+  assign review_count = 0
+  assign rating_sum = 0
+
+  for review in review_items
+    if review.product_handle.value == product.handle and review.status.value == 'approved'
+      assign review_count = review_count | plus: 1
+      assign current_rating = review.rating.value | default: 0 | plus: 0
+      assign rating_sum = rating_sum | plus: current_rating
+    endif
+  endfor
+
+  if review_count > 0
+    assign rating_average = rating_sum | times: 1.0 | divided_by: review_count
+  else
+    assign rating_average = 0
+  endif
+  assign rounded_average = rating_average | round
+%}
+
+<div class="aruna-rating-badge" style="--aruna-star: {{ block.settings.star_color }};">
+  <span class="aruna-stars" aria-label="{{ rating_average | round: 1 }} de 5 estrelas">
+    {% for star in (1..5) %}{% if star <= rounded_average %}★{% else %}☆{% endif %}{% endfor %}
+  </span>
+  <strong>{{ rating_average | round: 1 | replace: '.', ',' }}</strong>
+  <span class="aruna-rating-badge__count">({{ review_count }})</span>
 </div>
 
 {% schema %}
@@ -15,7 +33,6 @@
   "target": "section",
   "enabled_on": { "templates": ["product"] },
   "stylesheet": "aruna-reviews.css",
-  "javascript": "aruna-reviews.js",
   "settings": [
     { "type": "color", "id": "star_color", "label": "Cor das estrelas", "default": "#F5B301" }
   ]
