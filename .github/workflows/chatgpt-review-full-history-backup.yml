@@ -1,0 +1,37 @@
+name: ChatGPT Review Full History Backup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/chatgpt-review-full-history-backup.yml
+
+jobs:
+  backup-history:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build complete Git history backup
+        shell: bash
+        run: |
+          git fetch --all --tags --prune
+          git bundle create Aruna-Review-TODAS-AS-VERSOES.bundle --all
+          git log --all --date=iso --pretty=format:'%H | %ad | %s' > Aruna-Review-HISTORICO-DE-VERSOES.txt
+
+      - name: Upload complete history
+        uses: actions/upload-artifact@v4
+        with:
+          name: aruna-review-todas-as-versoes
+          path: |
+            Aruna-Review-TODAS-AS-VERSOES.bundle
+            Aruna-Review-HISTORICO-DE-VERSOES.txt
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 1
