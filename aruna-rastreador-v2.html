@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rastreador Inteligente Aruna</title>
+<meta name="description" content="Landing page premium do Rastreador Inteligente Aruna.">
+<style>
+:root{--ink:#101317;--muted:#606a76;--paper:#f4f6f8;--white:#fff;--blue:#087ff5;--navy:#06182c;--line:#dfe6ee;--soft:#eaf4ff;--r:30px}
+*{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--paper)}body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+img{display:block;width:100%}.wrap{width:min(760px,calc(100% - 24px));margin:auto}.section{padding:18px 0}.ey{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+h1,h2,h3,p{margin-top:0}h1{font-size:clamp(42px,11vw,68px);line-height:.93;letter-spacing:-.05em;margin-bottom:16px}h2{font-size:clamp(34px,9vw,54px);line-height:.98;letter-spacing:-.045em;margin-bottom:14px}h3{font-size:21px;margin-bottom:7px}.lead{font-size:18px;line-height:1.5;color:var(--muted)}.blue{color:var(--blue)}
+.card{background:#fff;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 42px rgba(20,41,62,.07)}
+.hero{padding-top:12px}.hero .card{background:linear-gradient(145deg,#06111f,#0b2d50);color:#fff;padding:28px 22px 0;position:relative;min-height:680px}
+.hero .lead{color:#d6e4f1}.hero-art{position:absolute;left:0;right:0;bottom:0;height:56%;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.hero-art:before{content:"";position:absolute;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,#1f9cff55,transparent 64%);filter:blur(4px)}
+.hero-art img{position:relative;width:95%;max-width:640px;mix-blend-mode:screen;filter:contrast(1.05) brightness(.95)}
+.watermark{position:absolute;right:-10px;bottom:26px;font-size:86px;font-weight:950;letter-spacing:.1em;color:rgba(255,255,255,.035);pointer-events:none}
+.strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.pill{padding:10px 12px;border-radius:999px;background:#ffffff0f;border:1px solid #ffffff22;color:#e8f4ff;font-size:12px;font-weight:800}
+.intro .card{padding:30px 22px;text-align:center}.intro h2{max-width:620px;margin-left:auto;margin-right:auto}.intro .lead{max-width:580px;margin:auto}
+.benefits-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.benefit{padding:22px;background:#fff;border:1px solid var(--line);border-radius:24px;min-height:210px}.ico{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#0b84ff,#065cae);color:#fff;font-size:23px;margin-bottom:26px}.benefit p{font-size:14px;line-height:1.5;color:var(--muted);margin-bottom:0}
+.visual .card{padding:0;background:#fff}.visual img{aspect-ratio:1/1;object-fit:cover}.copy{padding:24px 22px}.copy .lead{font-size:16px}.list{display:grid;gap:10px;margin-top:20px}.row{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.num{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--soft);color:#146ab9;font-weight:900}.row b{display:block;margin-bottom:3px}.row span{font-size:14px;color:var(--muted);line-height:1.45}
+.dark .card{background:linear-gradient(145deg,#071423,#02060a);color:#fff;padding:28px 22px}.dark .lead{color:#c7d4df}.dark .water{position:absolute;left:20px;right:20px;bottom:16px;text-align:center;font-weight:950;letter-spacing:.3em;color:#ffffff0a;font-size:60px}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}.step{background:#fff;border:1px solid var(--line);border-radius:22px;padding:20px;min-height:180px}.step .big{font-size:46px;font-weight:950;color:#d6eaff;line-height:1;margin-bottom:20px}.step p{font-size:14px;line-height:1.45;color:var(--muted)}
+.compare .card{padding:28px 18px}.comparebox{margin-top:20px;border:1px solid var(--line);border-radius:22px;overflow:hidden}.cr{display:grid;grid-template-columns:1.4fr .8fr .8fr;min-height:60px;align-items:center;padding:0 12px;border-bottom:1px solid var(--line)}.cr:last-child{border-bottom:0}.cr.head{background:#f4f7fa;font-size:12px;font-weight:900}.yes{text-align:center;color:#0aa338;font-weight:950}.no{text-align:center;color:#c6cbd0;font-weight:900}
+.end .card{background:linear-gradient(145deg,#0c84ff,#073d76);color:white;padding:34px 22px;text-align:center}.end .lead{color:#e8f4ff;margin:auto;max-width:560px}.end .wm{margin-top:30px;font-size:12px;letter-spacing:.4em;font-weight:900;color:#cfe8ff}
+@media(max-width:560px){.wrap{width:min(100% - 16px,760px)}.section{padding:10px 0}.hero .card{min-height:640px;border-radius:24px;padding:24px 18px 0}.benefits-grid,.steps{grid-template-columns:1fr}.card,.benefit,.step{border-radius:22px}.benefit{min-height:auto}.visual img{aspect-ratio:1/1.08}.cr{grid-template-columns:1.3fr .7fr .7fr}.cr span{font-size:12px}}
+</style>
+</head>
+<body>
+<main>
+<section class="section hero"><div class="wrap"><div class="card">
+<div class="ey">Rastreador inteligente</div>
+<h1>Seu carro, suas chaves,<br><span class="blue">sua tranquilidade.</span></h1>
+<p class="lead">Um rastreador compacto para ajudar você a localizar chaves e itens importantes pelo app Buscar.</p>
+<div class="strip"><span class="pill">Compatível com Buscar</span><span class="pill">Alerta sonoro</span><span class="pill">Compacto</span></div>
+<div class="hero-art"><img src="https://i5.walmartimages.com/seo/Key-Finder-Bluetooth-Tracker-Locator-Works-Apple-Find-My-iOS-Only-Smart-tag-Item-Finder-Key-Chain-Smart-Item-Locator-Keys-Bags-Luggage-Pet-Battery-In_1e59c35e-2313-4590-8a1f-50585c3c2a59.5a2d6b467feeb97c1fea7ea78784bacc.jpeg" alt="Rastreador inteligente"></div>
+<div class="watermark">ARUNA</div>
+</div></div></section>
+
+<section class="section intro"><div class="wrap"><div class="card"><div class="ey">Para quem vive o carro</div><h2>Perder a chave é fácil.<br><span class="blue">Perder tempo procurando não precisa ser.</span></h2><p class="lead">Tenha uma referência de localização e um alerta sonoro para encontrar o que faz parte da sua rotina.</p></div></div></section>
+
+<section class="section"><div class="wrap"><div class="benefits-grid">
+<div class="benefit"><div class="ico">⌖</div><h3>Veja no mapa</h3><p>Consulte a localização disponível diretamente no app Buscar.</p></div>
+<div class="benefit"><div class="ico">◉</div><h3>Toque para encontrar</h3><p>Quando estiver por perto, acione o som e reduza a procura.</p></div>
+<div class="benefit"><div class="ico">◇</div><h3>Discreto de verdade</h3><p>Formato pequeno, leve e simples de carregar no chaveiro.</p></div>
+<div class="benefit"><div class="ico">↗</div><h3>Vai além da chave</h3><p>Use também em mochila, mala e outros itens importantes.</p></div>
+</div></div></section>
+
+<section class="section visual"><div class="wrap"><div class="card">
+<img src="https://i5.walmartimages.com/seo/Key-Finder-Bluetooth-Tracker-Locator-Works-Apple-Find-My-iOS-Only-Smart-tag-Item-Finder-Key-Chain-Smart-Item-Locator-Keys-Bags-Luggage-Pet-Battery-In_1e59c35e-2313-4590-8a1f-50585c3c2a59.5a2d6b467feeb97c1fea7ea78784bacc.jpeg" alt="Rastreador e smartphone">
+<div class="copy"><div class="ey">Localização inteligente</div><h2>Abra o Buscar.<br><span class="blue">Veja onde está.</span></h2><p class="lead">O rastreador trabalha com recursos compatíveis da rede Buscar para mostrar a localização disponível do item.</p>
+<div class="list"><div class="row"><div class="num">01</div><div><b>Consulte no mapa</b><span>Veja a posição disponível pelo aplicativo.</span></div></div><div class="row"><div class="num">02</div><div><b>Encontre por perto</b><span>Use o alerta sonoro quando o item estiver próximo.</span></div></div><div class="row"><div class="num">03</div><div><b>Sem mensalidade de chip</b><span>Não é um GPS celular tradicional com plano móvel próprio.</span></div></div></div></div>
+</div></div></section>
+
+<section class="section dark"><div class="wrap"><div class="card" style="position:relative;overflow:hidden"><div class="ey">Tecnologia que acompanha</div><h2>Compacto por fora.<br><span class="blue">Útil quando importa.</span></h2><p class="lead">Um acessório pensado para ficar no chaveiro sem chamar atenção e estar ali quando você precisar localizar.</p><div class="water">ARUNA</div></div></div></section>
+
+<section class="section"><div class="wrap"><div class="ey">Configuração simples</div><h2>Do primeiro toque ao mapa.</h2><div class="steps">
+<div class="step"><div class="big">01</div><h3>Ative</h3><p>Ligue o rastreador conforme as instruções do produto.</p></div>
+<div class="step"><div class="big">02</div><h3>Abra o Buscar</h3><p>Acesse o aplicativo Buscar no iPhone compatível.</p></div>
+<div class="step"><div class="big">03</div><h3>Adicione o item</h3><p>Siga o fluxo para incluir um novo item compatível.</p></div>
+<div class="step"><div class="big">04</div><h3>Nomeie e acompanhe</h3><p>Dê um nome e consulte quando precisar.</p></div>
+</div></div></section>
+
+<section class="section compare"><div class="wrap"><div class="card"><div class="ey">Na prática</div><h2>Mais controle.<br><span class="blue">Menos procura.</span></h2><div class="comparebox">
+<div class="cr head"><span>Recurso</span><span style="text-align:center">Com rastreador</span><span style="text-align:center">Sem</span></div>
+<div class="cr"><span>Consultar localização disponível</span><span class="yes">✓</span><span class="no">—</span></div>
+<div class="cr"><span>Emitir som por perto</span><span class="yes">✓</span><span class="no">—</span></div>
+<div class="cr"><span>Usar no chaveiro</span><span class="yes">✓</span><span class="no">—</span></div>
+<div class="cr"><span>Acompanhar pelo Buscar</span><span class="yes">✓</span><span class="no">—</span></div>
+</div></div></div></section>
+
+<section class="section end"><div class="wrap"><div class="card"><div class="ey" style="color:#d9efff;justify-content:center">Tudo para quem vive o carro</div><h2>Menos preocupação.<br>Mais caminho.</h2><p class="lead">Tecnologia simples para uma rotina mais tranquila, sem transformar o que deveria ajudar em mais uma complicação.</p><div class="wm">ARUNA</div></div></div></section>
+</main>
+</body></html>
